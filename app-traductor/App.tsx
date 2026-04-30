@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   },
   input:{
     width: '100%',
-    minheight: 50,
+    minHeight: 50,
     backgroundColor: '#ffffff',
     borderRadius: 8,
     padding: 15,
