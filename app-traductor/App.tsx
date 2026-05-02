@@ -1,5 +1,15 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator, Platform, Alert } from 'react-native';
+import { Audio } from 'expo-av';
+
+/*wooloo : Para la funcion de voz a texto, tube que separalo si es que lo compila en web o en movil,
+  porque expo-speech-recognition no es compatible con web y el programa se ponia a llorar
+  si lo importaba en este archivo
+*/
+const { TextoAVoz, vozATexto } =
+  Platform.OS === 'web'
+    ? require('./servis/vozATexto.web')
+    : require('./servis/vozATexto.native');
 
 //Nota de 'Rukasu': por recomendación de un amigo mio, usare typescript para el frontend
 
@@ -17,12 +27,17 @@ export default function App() {
   const [texto, setTexto] = useState<string>('');
   const [resultado, setResultado] = useState<string>('');
   const [cargando, setCargando] = useState<boolean>(false);
+  
+  //wooloo: estados para la grabacion de voz
+  const [grabando, setGrabando] = useState<boolean>(false);
+  const [transcribiendo, setTranscribiendo] = useState<boolean>(false);
+  const grabacionRef = useRef<Audio.Recording | null>(null);
 
   const idiomaOrigen = "es";
   const idiomaDestino = "ht";
 
   const TraducirTexto = async () => {
-    if(!texto) return;
+    if (!texto) return;
 
     const apiKey = "";
     const region = "global"
@@ -53,7 +68,7 @@ export default function App() {
 
       //const datos = await respuesta.json();
       const datos: ResultadoTraduccion[] = await respuesta.json();
-      if(datos[0] && datos[0].translations) {
+      if (datos[0] && datos[0].translations) {
         setResultado(datos[0].translations[0].text);
       }
     } catch (error) {
@@ -63,12 +78,75 @@ export default function App() {
       setCargando(false);
     }
   };
+
+  //wooloo: función para manejar la grab
+  const toggleHablar = async () => {
+    if (Platform.OS === 'web') {
+      Alert.alert('No disponible en web', 'La grabacion por microfono esta habilitada solo en movil.');
+      return;
+    }
+
+    try {
+      if (!grabando) {
+        const permiso = await Audio.requestPermissionsAsync();
+        if (!permiso.granted) {
+          Alert.alert('Permiso requerido', 'Debes permitir acceso al microfono para usar Hablar.');
+          return;
+        }
+
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: true,
+          playsInSilentModeIOS: true,
+        });
+
+        const recording = new Audio.Recording();
+        await recording.prepareToRecordAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
+        await recording.startAsync();
+        grabacionRef.current = recording;
+        setGrabando(true);
+        return;
+      }
+
+      const recording = grabacionRef.current;
+      if (!recording) {
+        setGrabando(false);
+        return;
+      }
+
+      setGrabando(false);
+      setTranscribiendo(true);
+      await recording.stopAndUnloadAsync();
+      const uri = recording.getURI();
+      grabacionRef.current = null;
+
+      if (!uri) {
+        Alert.alert('Error', 'No se encontro el audio grabado.');
+        return;
+      }
+
+      const textoTranscrito = await vozATexto(uri);
+      if (textoTranscrito) {
+        setTexto(textoTranscrito);
+      }
+    } catch (error) {
+      const mensaje = error instanceof Error ? error.message : 'No se pudo convertir tu voz a texto.';
+      Alert.alert('Error de voz a texto', mensaje);
+    } finally {
+      setTranscribiendo(false);
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        playsInSilentModeIOS: true,
+      });
+    }
+  };
+  // wooloo :aqui paraaaaaaaaaaaaaa
+
   return (
     <View style={styles.container}>
       <View style={styles.cuadroidioma}>
         <Text style={styles.textoidioma}>idioma: {idiomaOrigen}</Text>
       </View>
-      
+  
       <TextInput
         style={styles.input}
         placeholder="Escribe algo en español..."
@@ -76,6 +154,19 @@ export default function App() {
         value={texto}
         multiline={true}
       />
+
+      <TouchableOpacity
+        style={styles.boton}
+        onPress={toggleHablar}
+        disabled={cargando || transcribiendo}
+      >
+        {transcribiendo ? (
+          <ActivityIndicator color="#ffffff" />
+        ) : (
+          <Text style={styles.textoBoton}>{grabando ? 'Detener' : 'Hablar'}</Text>
+        )}
+      </TouchableOpacity>
+
       <View style={styles.cuadroidiomadestino}>
         <Text style={styles.textoidioma}>Traduciendo a: {idiomaDestino}</Text>
       </View>
@@ -88,6 +179,12 @@ export default function App() {
         <View style={styles.contenedorResultado}>
           <Text style={styles.label}>Traducción:</Text>
           <Text style={styles.textoResultado}>{resultado}</Text>
+
+          {/* wooloo: botón para escuchar la traducción en voz alta */}
+          <TouchableOpacity style={styles.boton} onPress={() => TextoAVoz(resultado)}>
+            <Text style={styles.textoBoton}>Escuchar</Text>
+          </TouchableOpacity>
+        
         </View>
       ) : null}
     </View>
