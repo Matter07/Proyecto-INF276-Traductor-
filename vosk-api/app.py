@@ -10,6 +10,7 @@ from pathlib import Path
 import requests
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from pydub import AudioSegment
 from vosk import KaldiRecognizer, Model, SetLogLevel
 
 MODEL_URL = os.getenv(
@@ -57,17 +58,19 @@ def _clean_base64_audio(data: str) -> bytes:
     return base64.b64decode(cleaned)
 
 
+def _to_wav_pcm(audio_bytes: bytes) -> bytes:
+    """Convierte cualquier formato de audio a WAV PCM 16-bit mono 16000 Hz."""
+    audio = AudioSegment.from_file(io.BytesIO(audio_bytes))
+    audio = audio.set_channels(1).set_frame_rate(16000).set_sample_width(2)
+    buffer = io.BytesIO()
+    audio.export(buffer, format="wav")
+    return buffer.getvalue()
+
+
 def _transcribe_wav_bytes(audio_bytes: bytes) -> str:
-    with wave.open(io.BytesIO(audio_bytes), "rb") as wav_file:
-        channels = wav_file.getnchannels()
-        sample_width = wav_file.getsampwidth()
+    wav_bytes = _to_wav_pcm(audio_bytes)
+    with wave.open(io.BytesIO(wav_bytes), "rb") as wav_file:
         sample_rate = wav_file.getframerate()
-
-        if channels != 1:
-            raise ValueError("El audio debe ser mono (1 canal).")
-        if sample_width != 2:
-            raise ValueError("El audio debe ser PCM 16-bit WAV.")
-
         recognizer = KaldiRecognizer(model, sample_rate)
         recognizer.SetWords(False)
 
@@ -102,8 +105,6 @@ def transcribe():
         audio_bytes = _clean_base64_audio(audio_base64)
         text = _transcribe_wav_bytes(audio_bytes)
         return jsonify({"text": text})
-    except wave.Error:
-        return jsonify({"error": "Formato invalido. Debe ser WAV PCM 16-bit mono."}), 400
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
     except Exception as exc:

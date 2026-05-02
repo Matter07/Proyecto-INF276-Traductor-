@@ -3,7 +3,7 @@ services:
     name: vosk-api
     env: python
     plan: free
-    buildCommand: pip install -r requirements.txt
+    buildCommand: apt-get install -y ffmpeg && pip install -r requirements.txt
     startCommand: python app.py
     envVars:
       - key: PYTHON_VERSION
