@@ -2,4 +2,3 @@ flask==3.0.3
 flask-cors==5.0.0
 vosk==0.3.45
 requests==2.32.3
-pydub==0.25.1

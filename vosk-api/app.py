@@ -3,6 +3,8 @@ import io
 import json
 import os
 import re
+import subprocess
+import tempfile
 import wave
 import zipfile
 from pathlib import Path
@@ -10,7 +12,6 @@ from pathlib import Path
 import requests
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from pydub import AudioSegment
 from vosk import KaldiRecognizer, Model, SetLogLevel
 
 MODEL_URL = os.getenv(
@@ -59,12 +60,25 @@ def _clean_base64_audio(data: str) -> bytes:
 
 
 def _to_wav_pcm(audio_bytes: bytes) -> bytes:
-    """Convierte cualquier formato de audio a WAV PCM 16-bit mono 16000 Hz."""
-    audio = AudioSegment.from_file(io.BytesIO(audio_bytes))
-    audio = audio.set_channels(1).set_frame_rate(16000).set_sample_width(2)
-    buffer = io.BytesIO()
-    audio.export(buffer, format="wav")
-    return buffer.getvalue()
+    """Convierte cualquier formato de audio a WAV PCM 16-bit mono 16000 Hz usando ffmpeg."""
+    with tempfile.NamedTemporaryFile(suffix='.audio', delete=False) as src:
+        src.write(audio_bytes)
+        src_path = src.name
+    dst_path = src_path + '.wav'
+    try:
+        subprocess.run(
+            ['ffmpeg', '-y', '-i', src_path,
+             '-ar', '16000', '-ac', '1', '-f', 'wav', dst_path],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        with open(dst_path, 'rb') as f:
+            return f.read()
+    finally:
+        os.unlink(src_path)
+        if os.path.exists(dst_path):
+            os.unlink(dst_path)
 
 
 def _transcribe_wav_bytes(audio_bytes: bytes) -> str:
