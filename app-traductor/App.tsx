@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator, Platform, Alert } from 'react-native';
 import { Audio } from 'expo-av';
+import { Ionicons } from '@expo/vector-icons';
 
 /*wooloo : Para la funcion de voz a texto, tube que separalo si es que lo compila en web o en movil,
   porque expo-speech-recognition no es compatible con web y el programa se ponia a llorar
@@ -141,55 +142,64 @@ export default function App() {
   };
   // wooloo :aqui paraaaaaaaaaaaaaa
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.cuadroidioma}>
-        <Text style={styles.textoidioma}>idioma: {idiomaOrigen}</Text>
-      </View>
   
-      <TextInput
-        style={styles.input}
-        placeholder="Escribe algo en español..."
-        onChangeText={setTexto}
-        value={texto}
-        multiline={true}
-      />
-
-      <TouchableOpacity
-        style={styles.boton}
-        onPress={toggleHablar}
-        disabled={cargando || transcribiendo}
-      >
-        {transcribiendo ? (
-          <ActivityIndicator color="#ffffff" />
-        ) : (
-          <Text style={styles.textoBoton}>{grabando ? 'Detener' : 'Hablar'}</Text>
-        )}
-      </TouchableOpacity>
-
-      <View style={styles.cuadroidiomadestino}>
-        <Text style={styles.textoidioma}>Traduciendo a: {idiomaDestino}</Text>
-      </View>
-
-      <TouchableOpacity style={styles.boton} onPress={TraducirTexto} disabled={cargando}>
-        {cargando ? <ActivityIndicator color="#ffffff" /> : <Text style={styles.textoBoton}>Traducir</Text>}
-      </TouchableOpacity>
-
-      {resultado ? (
-        <View style={styles.contenedorResultado}>
-          <Text style={styles.label}>Traducción:</Text>
-          <Text style={styles.textoResultado}>{resultado}</Text>
-
-          {/* wooloo: botón para escuchar la traducción en voz alta */}
-          <TouchableOpacity style={styles.boton} onPress={() => TextoAVoz(resultado)}>
-            <Text style={styles.textoBoton}>Escuchar</Text>
-          </TouchableOpacity>
-        
+//Rukasu nota: cambie los botones de microfono y salida de audio y agregué un titulo
+  return (
+      <View style={styles.container}>
+        <Text style={styles.titulo}>Creo-ñol</Text>
+        <View style={styles.cuadroidioma}>
+          <Text style={styles.textoidioma}>idioma: {idiomaOrigen}</Text>
         </View>
-      ) : null}
-    </View>
+    
+        <TextInput
+          style={styles.input}
+          placeholder="Escribe algo en español..."
+          onChangeText={setTexto}
+          value={texto}
+          multiline={true}
+        />
+        <TouchableOpacity
+          style={styles.botonCircular}
+          onPress={toggleHablar}
+          disabled={cargando || transcribiendo}
+        >
+          {transcribiendo ? (
+            <ActivityIndicator color="#ffffff" />
+          ) : (
+            <Ionicons 
+              name={grabando ? "mic-off" : "mic"} 
+              size={30} 
+              color="#ffffff" 
+            />
+          )}
+        </TouchableOpacity>
+
+        <View style={styles.cuadroidiomadestino}>
+          <Text style={styles.textoidioma}>Traduciendo a: {idiomaDestino}</Text>
+        </View>
+
+        <TouchableOpacity style={styles.boton} onPress={TraducirTexto} disabled={cargando}>
+          {cargando ? <ActivityIndicator color="#ffffff" /> : <Text style={styles.textoBoton}>Traducir</Text>}
+        </TouchableOpacity>
+
+        {resultado ? (
+          <View style={styles.contenedorResultado}>
+            <Text style={styles.label}>Traducción:</Text>
+            <Text style={styles.textoResultado}>{resultado}</Text>
+
+            {/* wooloo: botón para escuchar la traducción en voz alta */}
+            <View style={{ marginTop: 15 }}>
+              <TouchableOpacity style={styles.botonCircular} onPress={() => TextoAVoz(resultado)}>
+                <Ionicons name="volume-high" size={30} color="#ffffff" />
+              </TouchableOpacity>
+            </View>
+          
+          </View>
+        ) : null}
+      </View>
   );
 }
+
 /*
 const styles = StyleSheet.create({
   container: {flex: 1, backgroundColor: '#ffffff', alignItems: 'center', justifyContent: 'center', padding: 20},
@@ -219,6 +229,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffb347',
     marginBottom: 10,
   },
+
+  titulo:{
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#ff7f50',
+    marginBottom: 25,
+    textAlign: 'center',
+  },
+
   cuadroidiomadestino: {
     width: '100%',
     padding: 10,
@@ -266,6 +285,20 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 1.41,
   },
+
+  botonCircular:{
+    width: 60,
+    height: 60,
+    backgroundColor: '#ff7f50',
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginBottom: 20,
+
+  },
+
+  
   label: {
     fontSize: 12,
     color: '#666',
