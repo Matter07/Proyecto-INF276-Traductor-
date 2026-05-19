@@ -35,8 +35,8 @@ export default function App() {
   const [transcribiendo, setTranscribiendo] = useState<boolean>(false);
   const grabacionRef = useRef<Audio.Recording | null>(null);
 
-  const idiomaOrigen = "es";
-  const idiomaDestino = "ht";
+  const idiomaOrigen = "Español";
+  const idiomaDestino = "Creolle";
 
   const TraducirTexto = async () => {
     if (!texto) return;
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
   botonCircular:{
     width: 60,
     height: 60,
-    backgroundColor: '#ff5050',
+    backgroundColor: '#f64040',
     borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   
   label: {
     fontSize: 12,
-    color: '#666',
+    color: '#000000',
     marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 1,
