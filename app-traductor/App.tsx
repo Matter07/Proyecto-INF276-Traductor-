@@ -3,6 +3,7 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator,
 import { Audio } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 
+
 /*wooloo : Para la funcion de voz a texto, tube que separalo si es que lo compila en web o en movil,
   porque expo-speech-recognition no es compatible con web y el programa se ponia a llorar
   si lo importaba en este archivo
@@ -217,7 +218,7 @@ const styles = StyleSheet.create({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffee83',
+    backgroundColor: '#fff176',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
@@ -242,25 +243,25 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 10,
     borderRadius: 8,
-    backgroundColor: '#ffb347',
+    backgroundColor: '#597aff',
     marginBottom: 10,
     alignItems: 'flex-end'
   },
   input:{
     width: '100%',
     minHeight: 50,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fff5c6',
     borderRadius: 8,
     padding: 15,
     borderWidth: 1,
-    borderColor: '#cccccc',
+    borderColor: '#fff5c6',
     marginBottom: 10,
     textAlignVertical: 'top'
   },
   boton: {
     width: '100%',
     height: 50,
-    backgroundColor: '#ff7f50',
+    backgroundColor: '#50adff',
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
@@ -274,11 +275,11 @@ const styles = StyleSheet.create({
   contenedorResultado: {
     width: '100%',
     padding: 20,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#cefcff',
     borderRadius: 8,
     minHeight: 100,
     borderWidth: 1,
-    borderColor: '#cccccc',
+    borderColor: '#cefcff',
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -289,7 +290,7 @@ const styles = StyleSheet.create({
   botonCircular:{
     width: 60,
     height: 60,
-    backgroundColor: '#ff7f50',
+    backgroundColor: '#ff5050',
     borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
