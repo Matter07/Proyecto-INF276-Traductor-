@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator, Platform, Alert } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator, Platform, Alert, ScrollView } from 'react-native';
 import { Audio } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -147,7 +147,7 @@ export default function App() {
 //Rukasu nota: cambie los botones de microfono y salida de audio y agregué un titulo
   return (
       <View style={styles.container}>
-        <Text style={styles.titulo}>Creo-ñol</Text>
+        <Text style={styles.titulo}>CREO-ÑOL</Text>
         <View style={styles.cuadroidioma}>
           <Text style={styles.textoidioma}>idioma: {idiomaOrigen}</Text>
         </View>
@@ -175,18 +175,27 @@ export default function App() {
           )}
         </TouchableOpacity>
 
-        <View style={styles.cuadroidiomadestino}>
-          <Text style={styles.textoidioma}>Traduciendo a: {idiomaDestino}</Text>
-        </View>
 
         <TouchableOpacity style={styles.boton} onPress={TraducirTexto} disabled={cargando}>
           {cargando ? <ActivityIndicator color="#ffffff" /> : <Text style={styles.textoBoton}>Traducir</Text>}
         </TouchableOpacity>
 
         {resultado ? (
-          <View style={styles.contenedorResultado}>
-            <Text style={styles.label}>Traducción:</Text>
-            <Text style={styles.textoResultado}>{resultado}</Text>
+          <>
+            <View style={styles.contenedorResultado}>
+              <Text style={styles.label}>Traducción:</Text>
+              <ScrollView 
+              style={{ maxHeight: 50 }}
+              showsVerticalScrollIndicator={true}
+              persistentScrollbar={true}
+              >
+                <Text style={styles.textoResultado}>{resultado}</Text>
+              </ScrollView>
+            </View>
+
+            <View style={styles.cuadroidiomadestino}>
+              <Text style={styles.textoidioma}>Traduciendo a: {idiomaDestino}</Text>
+            </View>
 
             {/* wooloo: botón para escuchar la traducción en voz alta */}
             <View style={{ marginTop: 15 }}>
@@ -194,9 +203,9 @@ export default function App() {
                 <Ionicons name="volume-high" size={30} color="#ffffff" />
               </TouchableOpacity>
             </View>
-          
-          </View>
+          </>
         ) : null}
+        
       </View>
   );
 }
@@ -232,24 +241,30 @@ const styles = StyleSheet.create({
   },
 
   titulo:{
-    fontSize: 26,
+    fontSize: 30,
     fontWeight: 'bold',
-    color: '#ff7f50',
+    color: '#822300',
     marginBottom: 25,
     textAlign: 'center',
+    fontFamily: 'Comic Sans MS',
+  },
+  textoidioma: {
+    fontSize: 14,
+    color: '#000000',
+    fontWeight: '500',
   },
 
   cuadroidiomadestino: {
     width: '100%',
     padding: 10,
     borderRadius: 8,
-    backgroundColor: '#597aff',
-    marginBottom: 10,
+    backgroundColor: '#ffb347',
+    marginTop: 10,
     alignItems: 'flex-end'
   },
   input:{
     width: '100%',
-    minHeight: 50,
+    minHeight: 70,
     backgroundColor: '#fff5c6',
     borderRadius: 8,
     padding: 15,
@@ -261,7 +276,7 @@ const styles = StyleSheet.create({
   boton: {
     width: '100%',
     height: 50,
-    backgroundColor: '#50adff',
+    backgroundColor: '#ad520d',
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
@@ -275,11 +290,11 @@ const styles = StyleSheet.create({
   contenedorResultado: {
     width: '100%',
     padding: 20,
-    backgroundColor: '#cefcff',
+    backgroundColor: '#421a00',
     borderRadius: 8,
     minHeight: 100,
     borderWidth: 1,
-    borderColor: '#cefcff',
+    borderColor: '#421a00',
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -290,7 +305,7 @@ const styles = StyleSheet.create({
   botonCircular:{
     width: 60,
     height: 60,
-    backgroundColor: '#f64040',
+    backgroundColor: '#ad520d',
     borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
@@ -302,14 +317,14 @@ const styles = StyleSheet.create({
   
   label: {
     fontSize: 12,
-    color: '#000000',
+    color: '#ffffff',
     marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
   textoResultado: {
-    fontSize: 18,
-    color: '#000',
+    fontSize: 12,
+    color: '#ffffff',
     fontWeight: '500'
   }
 });
