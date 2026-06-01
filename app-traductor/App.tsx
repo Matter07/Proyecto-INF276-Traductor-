@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator, Platform, Alert, ScrollView } from 'react-native';
 import { Audio } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
-
+import * as Clipboard from 'expo-clipboard';
 
 /*wooloo : Para la funcion de voz a texto, tube que separalo si es que lo compila en web o en movil,
   porque expo-speech-recognition no es compatible con web y el programa se ponia a llorar
@@ -142,6 +142,13 @@ export default function App() {
     }
   };
   // wooloo :aqui paraaaaaaaaaaaaaa
+  //Rukasu Nota: copia al portapapeleeees
+  const copiarAlPortapapeles = async () => {
+    if (resultado){
+      await Clipboard.setStringAsync(resultado);
+      Alert.alert('Copiado', 'El texto ha sido copiado al portapapeles.');
+    }
+  };
 
   
 //Rukasu nota: cambie los botones de microfono y salida de audio y agregué un titulo
@@ -198,9 +205,12 @@ export default function App() {
             </View>
 
             {/* wooloo: botón para escuchar la traducción en voz alta */}
-            <View style={{ marginTop: 15 }}>
+            <View style={styles.contenedorBotones}>
               <TouchableOpacity style={styles.botonCircular} onPress={() => TextoAVoz(resultado)}>
                 <Ionicons name="volume-high" size={30} color="#ffffff" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.botonCircular} onPress={copiarAlPortapapeles}>
+                <Ionicons name="copy-outline" size={30} color="#ffffff" />
               </TouchableOpacity>
             </View>
           </>
@@ -312,6 +322,12 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: 20,
 
+  },
+  contenedorBotones: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 20,
+    marginTop: 15,
   },
 
   
