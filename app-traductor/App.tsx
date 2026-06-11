@@ -41,7 +41,7 @@ export default function App() {
   const TraducirTexto = async () => {
     if (!texto) return;
 
-    const apiKey = "";
+    const apiKey = "1y8E5lyznBnr08JWTMU4e2yAZMfT1ianTVWkwXS7j98xCLyb3Q5qJQQJ99CDACULyCpXJ3w3AAAbACOGFcuF";
     const region = "global"
     const endpoint = "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=es&to=ht"
 
