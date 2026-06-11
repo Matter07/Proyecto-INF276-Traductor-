@@ -175,7 +175,7 @@ export default function App() {
             <ActivityIndicator color="#ffffff" />
           ) : (
             <Ionicons 
-              name={grabando ? "mic-off" : "mic"} 
+              name={grabando ? "square" : "mic"} 
               size={30} 
               color="#ffffff" 
             />
