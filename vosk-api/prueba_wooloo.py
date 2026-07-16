@@ -57,17 +57,21 @@ def Verificacion(frase):
     traduccion_inversa = input("Traducción inversa al español: ")
 
     # Paso 5: detectar palabras en español que no cumplen con el significado elegido y advertir
+    Lista_palabras_no_cumplen = []
     for palabra, significado in elecciones_es.items():
         if significado not in traduccion_inversa:
-            print(f"La palabra '{palabra}' no se tradujo correctamente ({significado}). Sea más específico.")
+            Lista_palabras_no_cumplen.append((palabra,significado))
+            print(f"Cuidado: '{palabra}' no se tradujo correctamente al español. Sea más específico.")
+           
 
     # Paso 6: detectar palabras ambiguas en el criollo y advertir
     ambiguas_cr = detectar_ambiguas(ambiguas_criollo, traduccion)
     elecciones_cr = preguntar_opciones(ambiguas_cr)
     for palabra, significado in elecciones_cr.items():
         if significado not in traduccion_inversa:
-            print(f"Cuidado: '{palabra}' es ambigua en criollo ({significado}). Sea más específico.")
-
+            Lista_palabras_no_cumplen.append((palabra, significado))
+            print(f"Cuidado: '{palabra}' no se tradujo correctamente al criollo. Sea más específico.")
+            
     return traduccion
 
 
